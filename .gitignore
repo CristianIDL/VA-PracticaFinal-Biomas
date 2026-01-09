@@ -14,3 +14,7 @@ ENV/
 .idea/
 *.swp
 *.swo
+
+# Imagenes del dataset Raw
+*.png
+*.jpg
