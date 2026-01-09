@@ -33,15 +33,17 @@ def cargar_imagen(ruta, max_dimension=600):
 
 
 def segmentar_kmeans(imagen, k=3, intentos=3):
-    """Segmenta una imagen usando K-Means clustering por color"""
+    """Segmenta una imagen usando K-Means clustering por HSV"""
 
-    print(crear_headline(f"Segmentación K-Means con {k} clusters ..."))
+    print(crear_headline(f"Segmentación K-Means con {k} clusters (HSV) ..."))
 
     inicio = time.time()
 
+    imagen_hsv = cv2.cvtColor(imagen, cv2.COLOR_RGB2HSV)
+
     # Convertimos la imagen a una matriz de píxeles
-    altura, ancho, canales = imagen.shape
-    pixeles = imagen.reshape((-1, 3)) # -1 infiere el número de filas, 3 columnas (RGB)
+    altura, ancho, canales = imagen_hsv.shape
+    pixeles = imagen_hsv.reshape((-1, 3))  # Ahora son valores HSV
 
     # Convertimos a float32
     pixeles = np.float32(pixeles)
@@ -65,19 +67,23 @@ def segmentar_kmeans(imagen, k=3, intentos=3):
     # Pasamos los centros a uint8
     centros = np.uint8(centros)
 
-    # Creamos la imagen segmentada
-    imagen_segmentada = centros[etiquetas.flatten()]
-    # Devolvemos la imagen a su forma original
-    imagen_segmentada = imagen_segmentada.reshape((imagen.shape))
+    # Creamos la imagen segmentada en HSV
+    imagen_segmentada_hsv = centros[etiquetas.flatten()]
+    imagen_segmentada_hsv = imagen_segmentada_hsv.reshape((imagen_hsv.shape))
+
+    # Regresamos la imagen segmentada a RGB para su visualización
+    imagen_segmentada = cv2.cvtColor(imagen_segmentada_hsv, cv2.COLOR_HSV2RGB)
 
     t_procesamiento = time.time() - inicio
     print(f"Segmentación completada en {t_procesamiento:.2f} segundos.") 
 
-    print(f"\nCentros de color (RGB): {centros}")
-    for i, centro in enumerate(centros):
-        print(f"+ Cluster {i+1}: RGB {tuple(centro)} , ")
-        # Mostrar en formato hexadecimal usando los canales de color
-        print(f"Hex: #{centro[0]:02x}{centro[1]:02x}{centro[2]:02x}")
+    print(f"\nCentros de color (HSV y RGB): {centros}")
+    for i, centro_hsv in enumerate(centros):
+        # Convertimos el centro de HSV a RGB para mostrarlo
+        centro_rgb = cv2.cvtColor(np.uint8([[centro_hsv]]), cv2.COLOR_HSV2RGB)[0][0]
+        print(f"+ Cluster {i+1}:")
+        print(f"  HSV: H={centro_hsv[0]:3d}° S={centro_hsv[1]:3d} V={centro_hsv[2]:3d}")
+        print(f"  RGB: {tuple(centro_rgb)}, Hex: #{centro_rgb[0]:02x}{centro_rgb[1]:02x}{centro_rgb[2]:02x}")
 
     # Calculamos las estadísticas de los clusters
     print(f"\nEstadísticas de los {k} clusters:")

@@ -3,10 +3,10 @@ src.audio.py: Módulo para manejar la reproducción de audio según el bioma det
 '''
 
 import pygame
+from time import time
 import os
 from pathlib import Path
 from src.prints import crear_headline
-from time import time
 
 def inicializar_audio():
     """Inicializa el sistema de audio."""

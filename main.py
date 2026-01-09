@@ -123,6 +123,7 @@ def main():
         print(f"\n[6/6] Resultados:")
         print(f"Bioma detectado: {bioma}")
         print(f"Nivel de confianza: {confianza:.2f}")
+        print(f"Clases de K-Means: {k}")
         print("- - " * 30)
 
         # 7. Preguntar si desea procesar otra imagen
