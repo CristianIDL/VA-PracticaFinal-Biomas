@@ -160,7 +160,7 @@ def entrenar_modelo(X_train, y_train, modelo_tipo='random_forest', optimizar=Fal
             }
             modelo_base = SVC(random_state=42)
             modelo = GridSearchCV(modelo_base, param_grid, cv=5,
-                                 scoring='accuracy', n_jobs=-1, verbose=1)
+                                 scoring='f1_macro', n_jobs=-1, verbose=1)
             modelo.fit(X_train, y_train)
             
             print(f"\n✓ Mejores parámetros encontrados:")
@@ -188,7 +188,7 @@ def entrenar_modelo(X_train, y_train, modelo_tipo='random_forest', optimizar=Fal
             }
             modelo_base = KNeighborsClassifier()
             modelo = GridSearchCV(modelo_base, param_grid, cv=5,
-                                 scoring='accuracy', n_jobs=-1, verbose=1)
+                                 scoring='f1_macro', n_jobs=-1, verbose=1)
             modelo.fit(X_train, y_train)
             
             print(f"\n✓ Mejores parámetros encontrados:")

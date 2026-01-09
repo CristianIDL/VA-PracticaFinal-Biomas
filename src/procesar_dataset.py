@@ -98,12 +98,27 @@ def procesar_dataset(k=5, max_dimension=600):
                     pixeles, k, None, criterio, 3, cv2.KMEANS_RANDOM_CENTERS
                 )
                 
-                centros_hsv = np.uint8(centros)
+                # Cambiamos este para tipo de dato float32
+                centros_hsv = centros.astype(np.float32)
                 etiquetas = etiquetas.reshape((altura, ancho))
                 
                 # Extraer features
                 features = extraer_features(imagen_rgb, etiquetas, centros_hsv, k)
-                
+
+                # Sanity check (solo la primera imagen)
+                if contador_global == 1:
+                    expected_dim = calcular_dimensiones_features(k)
+                    if features.shape[0] != expected_dim:
+                        raise ValueError(
+                            f"Dimensión incorrecta de features: "
+                            f"{features.shape[0]} ≠ {expected_dim}"
+                        )
+                    
+                    print(f" + Feature vector ejemplo:")
+                    print(f"  • Dimensión: {features.shape[0]}")
+                    print(f"  • Primeras 5: {features[:5]}")
+                    print(f"  • Últimas 5 (LBP): {features[-5:]}")
+                    
                 # Guardar datos
                 todas_features.append(features)
                 todas_labels.append(bioma)
@@ -184,8 +199,6 @@ def procesar_dataset(k=5, max_dimension=600):
     print(f"\n{'='*60}")
     print("✓ PROCESAMIENTO COMPLETADO EXITOSAMENTE")
     print(f"{'='*60}")
-    print(f"\nPróximo paso: python train.py")
-    
     return datos
 
 
